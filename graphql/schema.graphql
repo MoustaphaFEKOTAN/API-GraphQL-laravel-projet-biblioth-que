@@ -71,7 +71,7 @@ type Livre {
   date_sortie: String!
   slug: String!
   categorie: Categorie! @belongsTo
-  auteur: User! @belongsTo(relation: "auteur")
+  auteur: User! @belongsTo
 }
 
 type Query {
