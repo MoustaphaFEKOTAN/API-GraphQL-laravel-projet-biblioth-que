@@ -43,11 +43,6 @@ return [
             // Logs every incoming GraphQL query.
             // Nuwave\Lighthouse\Http\Middleware\LogGraphQLQueries::class,
 
-    'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-    'auteur' => \App\Http\Middleware\EnsureUserIsAuthor::class,
-    'admin' => \App\Http\Middleware\CheckIfIsADMIN::class,
-    'livre.owner' => \App\Http\Middleware\CheckLivreOwner::class,
-
         ],
 
         /*

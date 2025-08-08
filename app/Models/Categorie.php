@@ -20,9 +20,9 @@ class Categorie extends Model
     {
         parent::boot();
 
-        static::creating(function ($livre) {
+        static::creating(function ($categorie) {
             if (empty($livre->slug)) {
-                $livre->slug = (string) Str::uuid();
+                $categorie->slug = (string) Str::uuid();
             }
         });
     }

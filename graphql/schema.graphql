@@ -19,26 +19,7 @@ type Query {
     ): [User!]! @paginate(defaultCount: 10)
 }
 
-"Account of a person who uses this application."
-type User {
-    "Unique primary key."
-    id: ID!
 
-    "Non-unique name."
-    name: String!
-
-    "Unique email address."
-    email: String!
-
-    "When the email was verified."
-    email_verified_at: DateTime
-
-    "When the account was created."
-    created_at: DateTime!
-
-    "When the account was last updated."
-    updated_at: DateTime!
-}
 
 type Role {
   id: ID!
@@ -84,36 +65,37 @@ type Query {
 
 type Mutation {
   # Roles
-  createRole(nom: String!, slug: String): Role @create @middleware(checks: ["auth:sanctum", "auteur"])
-  updateRole(id: ID!, nom: String, slug: String): Role @update @middleware(checks: ["auth:sanctum", "auteur"])
-  deleteRole(id: ID!): Role @delete @middleware(checks: ["auth:sanctum", "auteur"])
+  createRole(nom: String!, slug: String): Role @create @guard(checks: ["auth:sanctum", "auteur"])
+  updateRole(id: ID!, nom: String, slug: String): Role @update @guard(checks: ["auth:sanctum", "auteur"])
+  deleteRole(id: ID!): Role @delete @guard(checks: ["auth:sanctum", "auteur"])
 
   # Categories
-  createCategorie(nom: String!,  slug: ID!): Categorie @create @middleware(checks: ["auth:sanctum", "admin"])
-  updateCategorie(id: ID!, nom: String, slug: String): Categorie @update @middleware(checks: ["auth:sanctum", "admin"])
-  deleteCategorie(id: ID!): Categorie @delete @middleware(checks: ["auth:sanctum", "admin"])
+  createCategorie(nom: String!): Categorie @create @guard(checks: ["auth:sanctum", "admin"])
+  updateCategorie(slug: ID!, nom: String, slug: String): Categorie @update @guard(checks: ["auth:sanctum", "admin"])
+  deleteCategorie(slug: ID!): Categorie @delete @guard(checks: ["auth:sanctum", "admin"])
 
 # Livres
   createLivre(
     titre: String!
     description: String!
     date_sortie: String!
-    slug: ID!
     categorie_id: ID!
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@create") @middleware(checks: ["auth:sanctum,'auteur"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@create") @guard(checks: ["auth:sanctum","auteur"])
 
   updateLivre(
-    id: ID!
+    slug: ID!
     titre: String
     description: String
     date_sortie: String
-    slug: ID!
     categorie_id: ID
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@update") @middleware(checks: ["auth:sanctum", "livre.owner"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@updateBySlug") @guard(checks: ["auth:sanctum", "livre.owner"])
 
   deleteLivre(
     slug: ID!
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@delete") @middleware(checks: ["auth:sanctum", "livre.owner"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") @guard(checks: ["auth:sanctum", "livre.owner"])
 
 
+# Utulisateur {
+  register(name: String!, email: String!, password: String!, password_confirmation: String!): User
+}
 }

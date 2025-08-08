@@ -2,30 +2,10 @@
 
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\LivreController;
-use App\Models\Role;
-use Illuminate\Http\Request;
 
 
 // --------------------------------------------------------------------------------------------------------------------------------
-
-
-//    LES ROUTES POUR LES ACTIONS SUR LA TABLE USERS
-Route::post('/register', [RegisteredUserController::class, 'store']);
-Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-
-
-//Déconnexion
-Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
-    $request->user()->currentAccessToken()->delete();
-
-    //  $request->user()->tokens()->delete(); Déconnecter de toutes les sessions
-
-    return response()->json(['message' => 'Déconnecté avec succès.']);
-});
-
 
 
 // Email Vérification
