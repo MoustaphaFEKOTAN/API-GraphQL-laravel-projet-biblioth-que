@@ -40,7 +40,6 @@ type User {
     updated_at: DateTime!
 }
 
---------------------------------
 type Role {
   id: ID!
   nom: String!

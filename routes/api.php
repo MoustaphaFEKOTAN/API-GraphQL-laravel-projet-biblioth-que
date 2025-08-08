@@ -28,8 +28,6 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 
 
 
-
-
 // Email Vérification
 Route::get('/email/verify/{id}/{hash}', [AuthenticatedSessionController::class, 'verifyEmail'])
     ->middleware(['auth:sanctum', 'signed'])
