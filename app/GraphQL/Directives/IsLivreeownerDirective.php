@@ -23,29 +23,30 @@ GRAPHQL;
      * @param  \Nuwave\Lighthouse\Schema\Values\FieldValue  $fieldValue
      * @return void
      */
-    public function handleField(FieldValue $fieldValue): void
-    {
-        // Récupérer l'utilisateur connecté
+   public function handleField(FieldValue $fieldValue): void
+{
+    $originalResolver = $fieldValue->getResolver();
+
+    $fieldValue->setResolver(function ($root, array $args, $context, $resolveInfo) use ($originalResolver) {
         $user = Auth::user();
 
-        // Récupérer le slug du livre depuis les arguments GraphQL
-      
         $slug = $args['slug'] ?? null;
 
         if (!$slug) {
             throw new AuthorizationException('Le slug du livre est requis.');
         }
 
-        // Trouver le livre via le slug
-        $livre = Livre::where('slug', $slug)->first();
+        $livre = \App\Models\Livre::where('slug', $slug)->first();
 
         if (!$livre) {
             throw new AuthorizationException('Livre non trouvé.');
         }
 
-        // Vérifier que l'utilisateur connecté est bien le propriétaire du livre
         if ($livre->user_id !== $user->id) {
             throw new AuthorizationException('Accès refusé : vous n\'êtes pas le propriétaire de ce livre.');
         }
-    }
+
+        return $originalResolver($root, $args, $context, $resolveInfo);
+    });
+}
 }

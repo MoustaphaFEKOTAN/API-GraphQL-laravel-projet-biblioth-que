@@ -93,11 +93,11 @@ type Mutation {
     description: String
     date_sortie: String
     categorie_id: ID
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@updateBySlug") @guard(checks: ["auth:sanctum"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@updateBySlug") @isLivreeowner @guard(checks: ["auth:sanctum"])
 
   deleteLivre(
     slug: ID!
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") @guard(checks: ["auth:sanctum"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") @isLivreeowner @guard(checks: ["auth:sanctum"])
 
   # Utilisateur
   register(
@@ -113,5 +113,24 @@ type Mutation {
   password: String!
   remember_me: Boolean
   ):Login @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@login")
+
+
+  sendVerificationEmail: MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@sendVerificationEmail") @guard
+  verifyEmail(token: String!, email: String!): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@verifyEmail")
+  forgotPassword(email: String!): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@forgotPassword")
+  resetPassword(
+    token: String!,
+    email: String!,
+    password: String!,
+    password_confirmation: String!
+  ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@resetPassword")
+  changePassword(
+    current_password: String!,
+    password: String!,
+    password_confirmation: String!
+  ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@changePassword") @guard
 }
 
+type MessageResponse {
+  message: String!
+}

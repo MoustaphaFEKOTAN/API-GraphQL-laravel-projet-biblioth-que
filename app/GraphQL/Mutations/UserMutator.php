@@ -5,11 +5,14 @@ namespace App\GraphQL\Mutations;
 
 use App\Actions\Fortify\CreateNewUser;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-
 use App\Models\User;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\Fortify\UpdateUserPassword;
 
 class UserMutator
 {
@@ -83,5 +86,95 @@ public function login($_, array $args)
     // Retourne exactement ce que le type GraphQL attend
     return $login ;
 }
+
+
+
+
+    public function sendVerificationEmail($_, array $args, Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return ['message' => 'Email déjà vérifié.'];
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return ['message' => 'Lien de vérification envoyé.'];
+    }
+
+    public function verifyEmail($_, array $args, Request $request)
+    {
+        // Ici, en GraphQL, tu devras passer les données de vérification (token, etc.) en args
+        // Le EmailVerificationRequest est spécifique à HTTP, il faut simuler
+
+        // Exemple simplifié : on suppose que le token et user sont corrects
+        $request->fulfill();
+
+        return ['message' => 'Email vérifié avec succès.'];
+    }
+
+    public function forgotPassword($_, array $args)
+    {
+        $validator = Validator::make($args, [
+            'email' => ['required', 'email'],
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $status = Password::sendResetLink(
+            ['email' => $args['email']]
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return ['message' => 'Lien de réinitialisation envoyé.'];
+        }
+
+        throw new \Exception('Impossible d\'envoyer le lien.');
+    }
+
+    public function resetPassword($_, array $args)
+    {
+        $validator = Validator::make($args, [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $status = Password::reset(
+            $args,
+            function ($user, $password) use ($args) {
+                app(ResetUserPassword::class)->reset($user, $args);
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return ['message' => 'Mot de passe réinitialisé avec succès.'];
+        }
+
+        throw new \Exception(__($status));
+    }
+
+    public function changePassword($_, array $args, Request $request)
+    {
+        $user = $request->user();
+
+        try {
+            app(UpdateUserPassword::class)->update($user, $args);
+
+            return ['message' => 'Mot de passe mis à jour avec succès.'];
+        } catch (ValidationException $e) {
+            throw new ValidationException($e->errors());
+        }
+    }
+
+
+
 
 }
