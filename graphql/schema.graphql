@@ -75,7 +75,7 @@ type Mutation {
   deleteRole(id: ID!): Role @delete @guard(checks: ["auth:sanctum", "admin"])
 
   # Categories
-  createCategorie(nom: String!): Categorie @create @guard(checks: ["auth:sanctum", "admin"])
+  createCategorie(nom: String!): Categorie @create @isAdmin @guard(checks: ["auth:sanctum"])
   updateCategorie(slug: ID!, nom: String, slug: String): Categorie @update @guard(checks: ["auth:sanctum", "admin"])
   deleteCategorie(slug: ID!): Categorie @delete @guard(checks: ["auth:sanctum", "admin"])
 
