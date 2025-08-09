@@ -15,6 +15,7 @@ final class IsAdminDirectiveDirective extends BaseDirective implements FieldMani
 
     public static function definition(): string
     {
+        
         return /** @lang GraphQL */ <<<'GRAPHQL'
 directive @isAdminDirective on FIELD_DEFINITION
 GRAPHQL;
