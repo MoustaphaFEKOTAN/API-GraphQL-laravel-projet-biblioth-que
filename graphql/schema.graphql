@@ -133,12 +133,13 @@ type Mutation {
     password: String!,
     password_confirmation: String!
   ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@changePassword") @guard
+
+   Deconnexion (
+  ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@logout")
 }
 
 
-  Deconnexion (
- token: String!,
-  ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@logout")
+ 
 
 
 
