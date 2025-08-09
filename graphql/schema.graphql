@@ -70,14 +70,14 @@ type Query {
 
 type Mutation {
   # Roles
-  createRole(nom: String!, slug: String): Role @create @guard(checks: ["auth:sanctum", "admin"])
-  updateRole(id: ID!, nom: String, slug: String): Role @update @guard(checks: ["auth:sanctum", "admin"])
-  deleteRole(id: ID!): Role @delete @guard(checks: ["auth:sanctum", "admin"])
+  createRole(nom: String!, slug: String): Role @create @isAdmin @guard(checks: ["auth:sanctum"])
+  updateRole(id: ID!, nom: String, slug: String): Role @update @isAdmin @guard(checks: ["auth:sanctum"])
+  deleteRole(id: ID!): Role @delete @isAdmin @guard(checks: ["auth:sanctum"])
 
   # Categories
   createCategorie(nom: String!): Categorie @create @isAdmin @guard(checks: ["auth:sanctum"])
-  updateCategorie(slug: ID!, nom: String, slug: String): Categorie @update @guard(checks: ["auth:sanctum", "admin"])
-  deleteCategorie(slug: ID!): Categorie @delete @guard(checks: ["auth:sanctum", "admin"])
+  updateCategorie(slug: ID!, nom: String): Categorie @update @isAdmin @guard(checks: ["auth:sanctum"])
+  deleteCategorie(slug: ID!): Categorie @delete @isAdmin @guard(checks: ["auth:sanctum"])
 
   # Livres
   createLivre(
