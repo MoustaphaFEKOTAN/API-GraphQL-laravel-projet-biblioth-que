@@ -19,9 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // ✅ Alias de middleware personnalisés
         $middleware->alias([
-            'auteur' => \App\Http\Middleware\EnsureUserIsAuthor::class,
-            'admin'  => \App\Http\Middleware\CheckIfIsADMIN::class,
-            'livre.owner' => \App\Http\Middleware\CheckLivreOwner::class,
+           
 
         ]);
     })

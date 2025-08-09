@@ -56,7 +56,7 @@ type Livre {
   date_sortie: String!
   slug: String!
   categorie: Categorie! @belongsTo
-  auteur: User! @belongsTo
+  user: User! @belongsTo
 }
 
 type Query {
@@ -70,9 +70,9 @@ type Query {
 
 type Mutation {
   # Roles
-  createRole(nom: String!, slug: String): Role @create @isAdmin @guard(checks: ["auth:sanctum"])
-  updateRole(id: ID!, nom: String, slug: String): Role @update @isAdmin @guard(checks: ["auth:sanctum"])
-  deleteRole(id: ID!): Role @delete @isAdmin @guard(checks: ["auth:sanctum"])
+  createRole(nom: String!): Role @create @isAdmin @guard(checks: ["auth:sanctum"])
+  updateRole(slug: ID!, nom: String): Role @update @isAdmin @guard(checks: ["auth:sanctum"])
+  deleteRole(slug: ID!): Role @delete @isAdmin @guard(checks: ["auth:sanctum"])
 
   # Categories
   createCategorie(nom: String!): Categorie @create @isAdmin @guard(checks: ["auth:sanctum"])
@@ -85,7 +85,7 @@ type Mutation {
     description: String!
     date_sortie: String!
     categorie_id: ID!
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@create") @guard(checks: ["auth:sanctum","auteur"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@create") @IsAuthor @guard(checks: ["auth:sanctum"])
 
   updateLivre(
     slug: ID!
@@ -93,11 +93,11 @@ type Mutation {
     description: String
     date_sortie: String
     categorie_id: ID
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@updateBySlug") @guard(checks: ["auth:sanctum", "livre.owner"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@updateBySlug") @guard(checks: ["auth:sanctum"])
 
   deleteLivre(
     slug: ID!
-  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") @guard(checks: ["auth:sanctum", "livre.owner"])
+  ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") @guard(checks: ["auth:sanctum"])
 
   # Utilisateur
   register(

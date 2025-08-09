@@ -30,7 +30,7 @@ class Livre extends Model
     return $this->belongsTo(Categorie::class);
 }
 
-public function auteur() {
+public function user() {
     return $this->belongsTo(User::class);
 }
 
