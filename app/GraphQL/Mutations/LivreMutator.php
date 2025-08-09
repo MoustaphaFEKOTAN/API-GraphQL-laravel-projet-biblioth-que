@@ -3,7 +3,9 @@
 namespace App\GraphQL\Mutations;
 
 use App\Models\Livre;
+use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Auth;
+use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class LivreMutator
 {
@@ -22,21 +24,25 @@ class LivreMutator
         return $livre;
     }
 
-    public function updateBySlug($root, array $args)
+    public function updateBySlug($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfoe)
     {
-        $livre = Livre::where('slug', $args['slug'])->firstOrFail();
+      
+  $livre = Livre::find($args['id']);
 
-        $livre->fill(array_filter($args, fn($value, $key) => $key !== 'slug', ARRAY_FILTER_USE_BOTH));
+        $livre->fill(array_filter($args, fn($value, $key) => $key !== 'id', ARRAY_FILTER_USE_BOTH));
         $livre->save();
 
         return $livre;
     }
+public function deleteBySlug($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfoe)
+{
 
-    public function deleteBySlug($root, array $args)
-    {
-        $livre = Livre::where('slug', $args['slug'])->firstOrFail();
-        $livre->delete();
+  $livre = Livre::find($args['id']);
 
-        return $livre;
-    }
+    $livre->delete();
+ 
+
+    return $livre;
+}
+
 }
