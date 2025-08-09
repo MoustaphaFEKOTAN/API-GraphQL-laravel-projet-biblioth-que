@@ -29,14 +29,3 @@ Route::middleware('auth:sanctum')->post('/change-password', [AuthenticatedSessio
     ->name('api.change-password');
 
 
-// --------------------------------------------------------------------------------------------------------------------------------
-
-// liste des role a envoyé au formulaire d'inscription 
-Route::get('/roles', function () {
-    return Role::select('id', 'nom')->get();
-});
-
-
-// Route::get('/test', function () {
-//     return 'ceci est un test réussi';
-// });

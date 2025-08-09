@@ -37,6 +37,11 @@ type User {
   livres: [Livre!]! @hasMany
 }
 
+type Login {
+  access_token: String!
+  user: User!
+}
+
 type Categorie {
   id: ID!
   nom: String!
@@ -65,16 +70,16 @@ type Query {
 
 type Mutation {
   # Roles
-  createRole(nom: String!, slug: String): Role @create @guard(checks: ["auth:sanctum", "auteur"])
-  updateRole(id: ID!, nom: String, slug: String): Role @update @guard(checks: ["auth:sanctum", "auteur"])
-  deleteRole(id: ID!): Role @delete @guard(checks: ["auth:sanctum", "auteur"])
+  createRole(nom: String!, slug: String): Role @create @guard(checks: ["auth:sanctum", "admin"])
+  updateRole(id: ID!, nom: String, slug: String): Role @update @guard(checks: ["auth:sanctum", "admin"])
+  deleteRole(id: ID!): Role @delete @guard(checks: ["auth:sanctum", "admin"])
 
   # Categories
   createCategorie(nom: String!): Categorie @create @guard(checks: ["auth:sanctum", "admin"])
   updateCategorie(slug: ID!, nom: String, slug: String): Categorie @update @guard(checks: ["auth:sanctum", "admin"])
   deleteCategorie(slug: ID!): Categorie @delete @guard(checks: ["auth:sanctum", "admin"])
 
-# Livres
+  # Livres
   createLivre(
     titre: String!
     description: String!
@@ -94,8 +99,19 @@ type Mutation {
     slug: ID!
   ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") @guard(checks: ["auth:sanctum", "livre.owner"])
 
+  # Utilisateur
+  register(
+    name: String!
+    email: String!
+    password: String!
+    password_confirmation: String!
+    role_id: ID!
+  ): User @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@register")
 
-# Utulisateur {
-  register(name: String!, email: String!, password: String!, password_confirmation: String!): User
+  login(
+  email: String!
+  password: String!
+  remember_me: Boolean
+  ):Login @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@login")
 }
-}
+
