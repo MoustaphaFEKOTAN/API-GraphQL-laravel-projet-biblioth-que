@@ -116,20 +116,31 @@ type Mutation {
 
 
   sendVerificationEmail: MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@sendVerificationEmail") @guard
+
   verifyEmail(token: String!, email: String!): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@verifyEmail")
+
   forgotPassword(email: String!): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@forgotPassword")
+
   resetPassword(
     token: String!,
     email: String!,
     password: String!,
     password_confirmation: String!
   ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@resetPassword")
+
   changePassword(
     current_password: String!,
     password: String!,
     password_confirmation: String!
   ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@changePassword") @guard
 }
+
+
+  Deconnexion (
+ token: String!,
+  ): MessageResponse @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@logout")
+
+
 
 type MessageResponse {
   message: String!

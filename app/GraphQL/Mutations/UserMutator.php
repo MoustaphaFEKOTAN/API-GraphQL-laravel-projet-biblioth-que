@@ -7,12 +7,13 @@ use App\Actions\Fortify\CreateNewUser;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserMutator
 {
@@ -90,9 +91,9 @@ public function login($_, array $args)
 
 
 
-    public function sendVerificationEmail($_, array $args, Request $request)
+    public function sendVerificationEmail($_, array $args)
     {
-        $user = $request->user();
+        $user =Auth::user();
 
         if ($user->hasVerifiedEmail()) {
             return ['message' => 'Email déjà vérifié.'];
@@ -103,16 +104,34 @@ public function login($_, array $args)
         return ['message' => 'Lien de vérification envoyé.'];
     }
 
-    public function verifyEmail($_, array $args, Request $request)
-    {
-        // Ici, en GraphQL, tu devras passer les données de vérification (token, etc.) en args
-        // Le EmailVerificationRequest est spécifique à HTTP, il faut simuler
 
-        // Exemple simplifié : on suppose que le token et user sont corrects
-        $request->fulfill();
 
-        return ['message' => 'Email vérifié avec succès.'];
+
+    public function verifyEmail($_, array $args)
+{
+    // Cherche l'utilisateur par email
+    $user = User::where('email', $args['email'])->first();
+
+    if (!$user) {
+        return ['message' => 'Utilisateur non trouvé.'];
     }
+
+    if ($user->hasVerifiedEmail()) {
+        return ['message' => 'Email déjà vérifié.'];
+    }
+
+
+    if (!hash_equals(sha1($user->getEmailForVerification()), $args['token'])) {
+        return ['message' => 'Token de vérification invalide.'];
+    }
+
+    // Marque comme vérifié
+    $user->markEmailAsVerified();
+
+
+    return ['message' => 'Email vérifié avec succès.'];
+}
+
 
     public function forgotPassword($_, array $args)
     {
@@ -161,20 +180,33 @@ public function login($_, array $args)
         throw new \Exception(__($status));
     }
 
-    public function changePassword($_, array $args, Request $request)
+    public function changePassword($_, array $args)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         try {
             app(UpdateUserPassword::class)->update($user, $args);
 
             return ['message' => 'Mot de passe mis à jour avec succès.'];
         } catch (ValidationException $e) {
-            throw new ValidationException($e->errors());
+            throw $e;
         }
     }
 
 
 
+    public function logout($_, array $args)
+{
+    $user = Auth::user();
+
+    if ($user) {
+        // Révoquer le token actuel
+      $user->currentAccessToken()->delete();
+
+        return ['message' => 'Déconnecté avec succès.'];
+    }
+
+    return ['message' => 'Utilisateur non authentifié.'];
+}
 
 }
