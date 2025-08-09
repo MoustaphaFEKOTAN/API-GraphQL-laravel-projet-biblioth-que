@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Directives;
 
+use App\Models\Livre;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Exceptions\AuthorizationException;
 use Nuwave\Lighthouse\Schema\Values\FieldValue;
@@ -12,7 +13,7 @@ final class IsLivreeownerDirective implements FieldMiddleware
     public static function definition(): string
     {
         return /** @lang GraphQL */ <<<'GRAPHQL'
-directive @IsLivreeownerDirective on FIELD_DEFINITION
+directive @isLivreeowner on FIELD_DEFINITION
 GRAPHQL;
     }
 
@@ -24,20 +25,27 @@ GRAPHQL;
      */
     public function handleField(FieldValue $fieldValue): void
     {
-         $user = $request->user();
-        $livreslug = $request->input('slug') ?? ($request->input('variables')['slug'] ?? null);
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
 
-        if (!$livreslug) {
-            abort(400, "Livre slug is required.");
+        // Récupérer le slug du livre depuis les arguments GraphQL
+      
+        $slug = $args['slug'] ?? null;
+
+        if (!$slug) {
+            throw new AuthorizationException('Le slug du livre est requis.');
         }
 
-        $livre = Livre::find($livreslug);
+        // Trouver le livre via le slug
+        $livre = Livre::where('slug', $slug)->first();
+
         if (!$livre) {
-            abort(404, "Livre not found.");
+            throw new AuthorizationException('Livre non trouvé.');
         }
 
-        if ($livre->user_slug !== $user->slug) {
-            abort(403, "Unauthorized: You are not the owner of this livre.");
+        // Vérifier que l'utilisateur connecté est bien le propriétaire du livre
+        if ($livre->user_id !== $user->id) {
+            throw new AuthorizationException('Accès refusé : vous n\'êtes pas le propriétaire de ce livre.');
         }
     }
 }
