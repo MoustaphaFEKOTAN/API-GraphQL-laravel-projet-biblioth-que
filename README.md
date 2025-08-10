@@ -15,38 +15,36 @@ Gestion des emails (vérification, reset mot de passe, etc.).
 Cloner le dépôt :
 
 bash
-Copier
 Modifier
-git clone https://github.com/tonusername/tonrepo.git
+git clone https://github.com/MoustaphaFEKOTAN/API-GraphQL-laravel-projet-biblioth-que.git
 cd tonrepo
 Installer les dépendances :
 
 bash
-Copier
 Modifier
 composer install
 Copier le fichier .env et configurer la base de données et autres variables :
 
 bash
-Copier
 Modifier
 cp .env.example .env
 Générer la clé d’application :
 
 bash
-Copier
 Modifier
 php artisan key:generate
 Lancer les migrations et seeders :
 
 bash
-Copier
 Modifier
 php artisan migrate --seed
-(Optionnel) Installer Lighthouse Playground pour tester les requêtes en local.
+(Optionnel) Pour tester , utuliser Postman ou /graphql-playground:
+
+ - composer require mll-lab/laravel-graphql-playground
+ - php artisan vendor:publish --provider="MLL\GraphQLPlayground\GraphQLPlaygroundServiceProvider"
 
 🚀 Utilisation
-Point d’entrée GraphQL
+Point d’entrée GraphQL pour tester votre schéma
 L’endpoint principal est /graphql-playground.
 
 Authentification
@@ -55,7 +53,6 @@ Utilise Laravel Sanctum pour gérer les tokens d’authentification.
 Toutes les mutations et queries protégées nécessitent le header HTTP :
 
 makefile
-Copier
 Modifier
 Authorization: Bearer <token>
 📖 Schéma GraphQL
@@ -109,19 +106,14 @@ Les tests unitaires sont basés sur PHPUnit et Features.
 Exemple de lancement des tests :
 
 bash
-Copier
-Modifier
 php artisan test
-(À compléter avec exemples spécifiques de tests que tu as écrits.)
 
 📦 Packages principaux
 Laravel 11
 
 Lighthouse
 
-Laravel Sanctum
-
-Orchestra Testbench (pour tests)
+Laravel Sanctum & Laravel Fortify
 
 ...
 
@@ -129,4 +121,4 @@ Orchestra Testbench (pour tests)
 Les contributions sont les bienvenues, merci de respecter la structure et de faire des pull requests.
 
 📞 Contact
-Pour toute question, contactez [ton.email@example.com].
+Pour toute question, contactez moustaphafek@gmail.com ].
