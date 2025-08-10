@@ -51,7 +51,9 @@ type Categorie {
   slug: String!
   livres: [Livre!]! @hasMany
 }
-
+"""
+Un livre publié par un auteur.
+"""
 type Livre {
   id: ID!
   titre: String!
