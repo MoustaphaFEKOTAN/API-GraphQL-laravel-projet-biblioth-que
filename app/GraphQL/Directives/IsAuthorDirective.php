@@ -23,14 +23,19 @@ GRAPHQL;
      * @return void
      */
     public function handleField(FieldValue $fieldValue): void
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-       if (Auth::check() && (! $user->role->nom === 'auteur' || ! $user->is_admin)) {
-         throw new AuthorizationException('Accès refusé. Vous devez être un auteur.');
-    }
+   if (! Auth::check() || ($user->role->nom !== 'auteur' && ! $user->is_admin)) {
+    throw new AuthorizationException('Accès refusé. Vous devez être un auteur ou un admin.');
+}
+
+
+    // Le schéma continue normalement
+}
+
 
         // Pas besoin de retourner quoi que ce soit.
         // Le schéma continue sa construction normalement.
     }
-}
+
