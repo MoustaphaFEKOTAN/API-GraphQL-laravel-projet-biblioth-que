@@ -17,28 +17,35 @@ Cloner le dépôt :
 ```bash
 git clone https://github.com/MoustaphaFEKOTAN/API-GraphQL-laravel-projet-biblioth-que.git
 cd tonrepo
+ ```
 Installer les dépendances :
 
 ```bash
 composer install
+ ```
 Copier le fichier .env et configurer la base de données et autres variables :
 
 ```bash
 cp .env.example .env
+ ```
 Générer la clé d’application :
 
 ```bash
 php artisan key:generate
+ ```
 Lancer les migrations et seeders :
 
 ```bash
 php artisan migrate --seed
+ ```
 
 (Optionnel) Pour tester , utuliser Postman ou graphql-playground:
 
+```bash
  - composer require mll-lab/laravel-graphql-playground
  - php artisan vendor:publish --provider="MLL\GraphQLPlayground\GraphQLPlaygroundServiceProvider"
 
+ ```
 🚀 Utilisation
 Point d’entrée GraphQL pour tester votre schéma
 L’endpoint principal est /graphql-playground.
@@ -50,6 +57,7 @@ Utilise Laravel Sanctum pour gérer les tokens d’authentification.
  1-composer require laravel/sanctum
 
 2- php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+ ```
 
 Toutes les mutations et queries protégées nécessitent le header HTTP :
 
@@ -100,6 +108,7 @@ Exemple de lancement des tests :
 
 ```bash
 php artisan test
+ ```
 
 📦 Packages principaux
 Laravel 11
