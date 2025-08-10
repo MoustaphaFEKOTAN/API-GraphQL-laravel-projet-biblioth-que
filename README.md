@@ -14,31 +14,27 @@ Gestion des emails (vérification, reset mot de passe, etc.).
 ⚙️ Installation
 Cloner le dépôt :
 
-bash
-Modifier
+```bash
 git clone https://github.com/MoustaphaFEKOTAN/API-GraphQL-laravel-projet-biblioth-que.git
 cd tonrepo
 Installer les dépendances :
 
-bash
-Modifier
+```bash
 composer install
 Copier le fichier .env et configurer la base de données et autres variables :
 
-bash
-Modifier
+```bash
 cp .env.example .env
 Générer la clé d’application :
 
-bash
-Modifier
+```bash
 php artisan key:generate
 Lancer les migrations et seeders :
 
-bash
-Modifier
+```bash
 php artisan migrate --seed
-(Optionnel) Pour tester , utuliser Postman ou /graphql-playground:
+
+(Optionnel) Pour tester , utuliser Postman ou graphql-playground:
 
  - composer require mll-lab/laravel-graphql-playground
  - php artisan vendor:publish --provider="MLL\GraphQLPlayground\GraphQLPlaygroundServiceProvider"
@@ -50,53 +46,50 @@ L’endpoint principal est /graphql-playground.
 Authentification
 Utilise Laravel Sanctum pour gérer les tokens d’authentification.
 
+```bash
+ 1-composer require laravel/sanctum
+
+2- php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+
 Toutes les mutations et queries protégées nécessitent le header HTTP :
 
-makefile
-Modifier
 Authorization: Bearer <token>
+
 📖 Schéma GraphQL
 Quelques exemples importants :
 
 Requête de livres avec pagination
 
-graphql
-Copier
-Modifier
-query {
-  livres(first: 10, page: 1) {
+{
+  livres(first: 1) {
     data {
       id
       titre
-      description
     }
     paginatorInfo {
       currentPage
-      hasMorePages
     }
   }
 }
 Mutation mise à jour livre (avec autorisation)
 
-graphql
-Copier
-Modifier
+
 mutation {
   updateLivre(
-    id: 1,
+    slug: "livre_slug",
     titre: "Nouveau titre"
   ) {
     id
     titre
   }
 }
-Mutation inscription / connexion / déconnexion / gestion email
+Mutation inscription / connexion / déconnexion / gestion email et mot de pâsse
 (voir les mutations documentées dans le schéma)
 
 🔐 Sécurité & Permissions
 Utilisation des policies Laravel pour vérifier les droits sur les mutations sensibles (ex : mise à jour, suppression).
 
-Utilisation de la directive @can pour automatiser les contrôles basés sur la clé primaire id.
+Utilisation des directives pour role admin et auteur (Possibilité d'utuliser les policy mais néccesite un resolver) .
 
 Protection des mutations et queries via la directive @guard avec auth:sanctum.
 
@@ -105,7 +98,7 @@ Les tests unitaires sont basés sur PHPUnit et Features.
 
 Exemple de lancement des tests :
 
-bash
+```bash
 php artisan test
 
 📦 Packages principaux
