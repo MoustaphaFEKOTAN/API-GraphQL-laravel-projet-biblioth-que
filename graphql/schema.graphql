@@ -67,7 +67,6 @@ type Query {
   users: [User!]! @all
   categories: [Categorie!]! @all
   livres: [Livre!]! @all
-  livre(nom: string!): Livre @find(model: "App\\Models\\Livre", key: "nom")
 }
 
 
