@@ -4,6 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use App\Models\Livre;
 use GraphQL\Type\Definition\ResolveInfo;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -24,20 +25,25 @@ class LivreMutator
         return $livre;
     }
 
-    public function updateBySlug($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfoe)
-    {
-      
-  $livre = Livre::find($args['id']);
+   public function updateBySlug($root, array $args)
+{
+    $livre = Livre::where('slug', $args['slug'])->firstOrFail();
 
-        $livre->fill(array_filter($args, fn($value, $key) => $key !== 'id', ARRAY_FILTER_USE_BOTH));
-        $livre->save();
-
-        return $livre;
+    // Vérifier la policy manuellement
+    if (!\Illuminate\Support\Facades\Gate::allows('update', $livre)) {
+        throw new AuthorizationException("Accès refusé");
     }
+
+    $livre->fill(array_filter($args, fn($value, $key) => $key !== 'slug', ARRAY_FILTER_USE_BOTH));
+    $livre->save();
+
+    return $livre;
+}
+
 public function deleteBySlug($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfoe)
 {
 
-  $livre = Livre::find($args['id']);
+ $livre = Livre::where('slug', $args['slug'])->firstOrFail();
 
     $livre->delete();
  
