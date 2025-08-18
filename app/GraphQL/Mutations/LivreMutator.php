@@ -14,22 +14,36 @@ class LivreMutator
     public function create($root, array $args)
     {
         $user = Auth::user();
-
-        $livre = Livre::create([
-            'titre' => $args['titre'],
-            'description' => $args['description'],
-            'date_sortie' => $args['date_sortie'],
-            'categorie_id' => $args['categorie_id'],
-            'user_id' => $user->id,
-        ]);
-
-        // ✅ Upload de la cover si fournie
-        if (!empty($args['cover'])) {
-            $livreData['cover'] = $args['cover']->store('covers', 'public');
+    
+        // ✅ Validation des champs
+        $validated = validator($args, [
+            'titre' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'date_sortie' => ['required', 'date'],
+            'categorie_id' => ['required', 'exists:categories,id'],
+            'cover' => ['nullable', 'file', 'image', 'max:5120'], // max 5MB
+        ])->validate();
+    
+        // ✅ Gestion de l'upload si cover fournie
+        $coverPath = null;
+        if (isset($validated['cover'])) {
+            $coverPath = $validated['cover']->store('covers', 'public');
         }
-
+    
+        // ✅ Création du livre avec tous les champs
+        $livre = Livre::create([
+            'titre' => $validated['titre'],
+            'description' => $validated['description'],
+            'date_sortie' => $validated['date_sortie'],
+            'categorie_id' => $validated['categorie_id'],
+            'user_id' => $user->id,
+            'cover' => $coverPath,
+        ]);
+    
+        
         return $livre;
     }
+    
 
    public function updateBySlug($root, array $args)
 {

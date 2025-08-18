@@ -11,7 +11,7 @@ class Livre extends Model
     use HasFactory;
 
      protected $fillable = [
-        'titre', 'description', 'date_sortie','categorie_id','user_id','cover'
+        'titre', 'description', 'date_sortie','categorie_id','user_id','cover',
         
     ];
 
