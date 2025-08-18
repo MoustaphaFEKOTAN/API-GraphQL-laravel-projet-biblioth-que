@@ -12,25 +12,21 @@ final class IsAdminDirective implements FieldMiddleware
     public static function definition(): string
     {
         return /** @lang GraphQL */ <<<'GRAPHQL'
-directive @isAdminDirective on FIELD_DEFINITION
+directive @isAdmin on FIELD_DEFINITION
 GRAPHQL;
     }
 
-    /**
-     * Handle the field middleware.
-     *
-     * @param  \Nuwave\Lighthouse\Schema\Values\FieldValue  $fieldValue
-     * @return void
-     */
     public function handleField(FieldValue $fieldValue): void
     {
-        $user = Auth::user();
+        $fieldValue->wrapResolver(function (callable $resolver) {
+            return function ($root, array $args, $context, $resolveInfo) use ($resolver) {
+                $user = Auth::user();
+                if (! $user || ! $user->is_admin) {
+                    throw new AuthorizationException('Accès refusé. Vous devez être administrateur.');
+                }
 
-        if (! $user || ! $user->is_admin) {
-            throw new AuthorizationException('Accès refusé. Vous devez être un administrateur.');
-        }
-
-        // Pas besoin de retourner quoi que ce soit.
-        // Le schéma continue sa construction normalement.
+                return $resolver($root, $args, $context, $resolveInfo);
+            };
+        });
     }
 }

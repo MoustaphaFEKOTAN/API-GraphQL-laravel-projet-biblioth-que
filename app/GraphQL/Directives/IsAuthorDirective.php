@@ -12,30 +12,25 @@ final class IsAuthorDirective implements FieldMiddleware
     public static function definition(): string
     {
         return /** @lang GraphQL */ <<<'GRAPHQL'
-directive @IsAuthorDirective on FIELD_DEFINITION
+directive @isAuthor on FIELD_DEFINITION
 GRAPHQL;
     }
 
-    /**
-     * Handle the field middleware.
-     *
-     * @param  \Nuwave\Lighthouse\Schema\Values\FieldValue  $fieldValue
-     * @return void
-     */
     public function handleField(FieldValue $fieldValue): void
-{
-    $user = Auth::user();
+    {
+        $fieldValue->wrapResolver(function (callable $resolver) {
+            return function ($root, array $args, $context, $resolveInfo) use ($resolver) {
+                $user = Auth::user();
 
-   if (! Auth::check() || ($user->role->nom !== 'auteur' && ! $user->is_admin)) {
-    throw new AuthorizationException('Accès refusé. Vous devez être un auteur ou un admin.');
-}
+                if (! $user || ($user->role->nom !== 'auteur' && ! $user->is_admin)) {
+                    throw new AuthorizationException(
+                        'Accès refusé. Vous devez être un auteur ou un administrateur.'
+                    );
+                }
 
-
-    // Le schéma continue normalement
-}
-
-
-        // Pas besoin de retourner quoi que ce soit.
-        // Le schéma continue sa construction normalement.
+                // Appeler le resolver original
+                return $resolver($root, $args, $context, $resolveInfo);
+            };
+        });
     }
-
+}

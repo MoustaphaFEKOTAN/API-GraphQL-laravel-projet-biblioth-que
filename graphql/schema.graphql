@@ -1,5 +1,6 @@
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 
 "Indicates what fields are available at the top level of a query operation."
 type Query {
@@ -60,6 +61,7 @@ type Livre {
   description: String!
   date_sortie: String!
   slug: String!
+  cover: String  # nouveau champ pour la cover
   categorie: Categorie! @belongsTo
   user: User! @belongsTo
 }
@@ -87,6 +89,7 @@ type Mutation {
   createLivre(
     titre: String!
     description: String!
+    cover: Upload
     date_sortie: String!
     categorie_id: ID!
   ): Livre @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@create") @IsAuthor @guard(checks: ["auth:sanctum"])
@@ -95,16 +98,19 @@ type Mutation {
     slug: String!
     titre: String
     description: String
+    cover: Upload
     date_sortie: String
     categorie_id: ID
   ): Livre
     @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@updateBySlug") 
+     @IsAuthor
     @guard(checks: ["auth:sanctum"])
 
   deleteLivre(
     slug: String!
   ): Livre
     @field(resolver: "App\\GraphQL\\Mutations\\LivreMutator@deleteBySlug") 
+     @IsAuthor
     @guard(checks: ["auth:sanctum"])
 
   # Utilisateur
